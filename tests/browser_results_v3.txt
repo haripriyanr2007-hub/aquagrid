@@ -1,0 +1,31 @@
+PASS  public portal loads with 6 public sections  -> Overview | Live Map | Road Conditions | Alerts | Report an Issue | Track My Report
+PASS  public nav has no admin sections
+PASS  public tab "Overview"  -> #/overview
+PASS  public tab "Live Map"  -> #/map
+PASS  public tab "Road Conditions"  -> #/roads
+PASS  public tab "Alerts"  -> #/alerts
+PASS  public tab "Report an Issue"  -> #/report
+PASS  public tab "Track My Report"  -> #/track
+PASS  report form offers camera AND gallery  -> environment:image/*, gallery:image/*
+PASS  anonymous #admin shows login only
+PASS  anonymous #admin/pump shows login only
+PASS  anonymous #admin/submissions shows login only
+PASS  anonymous #admin/control shows login only
+PASS  signed-in non-admin is refused
+PASS  admin portal shows the 10 existing + 3 new sections  -> Overview | Live Map | Flood Monitoring | Digital Twin | DrainX · Potholes | Road Risk | Repairs | Alerts | Control Room | System Health | Submission Review | Alert Responses | Pump Control
+PASS  admin tab "Overview"  -> #admin/overview
+PASS  admin tab "Live Map"  -> #admin/map
+PASS  admin tab "Flood Monitoring"  -> #admin/flood
+PASS  admin tab "Digital Twin"  -> #admin/twin
+PASS  admin tab "DrainX · Potholes"  -> #admin/drainx
+PASS  admin tab "Road Risk"  -> #admin/risk
+PASS  admin tab "Repairs"  -> #admin/repairs
+PASS  admin tab "Alerts"  -> #admin/alerts
+PASS  admin tab "Control Room"  -> #admin/control
+PASS  admin tab "System Health"  -> #admin/health
+PASS  admin tab "Submission Review"  -> #admin/submissions
+PASS  admin tab "Alert Responses"  -> #admin/responses
+PASS  admin tab "Pump Control"  -> #admin/pump
+PASS  pump page states hardware integration is pending
+PASS  automatic mode shows NOT CALIBRATED thresholds
+PASS  no JavaScript errors in the browser

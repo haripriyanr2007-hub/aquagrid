@@ -1,0 +1,72 @@
+== role checks
+PASS  anon is not admin  -> f
+PASS  signed-in citizen is not admin  -> f
+PASS  admin user is admin  -> t
+== public portal data
+PASS  anon reads public node status (no raw numbers)  -> Waterlogging likely
+PASS  anon cannot read raw readings (0 rows)  -> 0
+PASS  citizen cannot read raw readings  -> 0
+PASS  admin reads raw readings  -> 2
+PASS  anon still reads alerts  -> 1
+PASS  anon reads road_risk (unchanged)  -> t
+== submissions
+      tracking id: AQ-1A59-6456-1CD3
+PASS  anon cannot submit an image that was not uploaded  -> blocked: image not uploaded
+PASS  anon cannot point at another bucket path  -> blocked: invalid image path
+PASS  same image cannot be submitted twice  -> blocked: image already submitted
+PASS  new submission is Pending Review  -> Pending Review
+PASS  tracking works case-insensitively  -> 1
+PASS  unknown tracking id returns nothing  -> 0
+PASS  anon cannot list submissions table  -> 0
+PASS  citizen cannot list submissions table  -> 0
+PASS  pending report NOT in public_reports  -> 0
+PASS  admin sees pending submission  -> 1
+PASS  anon cannot read private image files  -> 0
+PASS  admin can read private image files  -> 2
+PASS  anon may upload into submissions/incoming  -> {}
+PASS  anon may NOT upload outside incoming/  -> blocked: new row violates row-level security policy for table "objects"
+PASS  anon may NOT upload to detections bucket  -> blocked: new row violates row-level security policy for table "objects"
+PASS  citizen cannot approve  -> blocked: admin role required
+PASS  citizen direct UPDATE changes nothing (RLS)  -> Pending Review
+PASS  admin approves with note  -> Approved
+PASS  approved report now public (no tracking id column)  -> pothole 12.9177
+PASS  public view has no tracking_id/review_note columns  -> 0
+PASS  tracking shows Approved  -> Approved
+PASS  review history recorded with admin email  -> approve:Pending Review->Approved:admin@aquagrid.test
+PASS  admin rejects second report  -> Rejected
+PASS  rejected report stays hidden  -> 1
+PASS  rejected record kept for audit  -> Rejected
+PASS  report without location has no coordinates  -> null
+== alert responses
+PASS  anon responds to an alert  -> 1
+PASS  invalid response type rejected  -> blocked: new row for relation "alert_responses" violates check constraint "alert_responses_response_type_check"
+PASS  response to unknown alert rejected  -> blocked: alert not found
+PASS  4th response from same session blocked  -> blocked: you have already responded to this alert
+PASS  anon cannot read responses  -> 0
+PASS  admin reads responses, status Unverified  -> 3 Unverified
+PASS  respondent stored as hash only  -> true
+== commands and pump
+PASS  anon cannot send any command  -> blocked: new row violates row-level security policy for table "commands"
+PASS  citizen cannot send any command  -> blocked: new row violates row-level security policy for table "commands"
+PASS  admin can send existing control-room command  -> {"sub":"11111111-1111-1111-1111-111111111111","email":"admin@aquagrid.test"}
+PASS  admin cannot fake a pump command by direct insert  -> blocked: new row violates row-level security policy for table "commands"
+PASS  citizen cannot request pump  -> blocked: admin role required
+PASS  admin requests pump ON (manual mode)  -> 5
+PASS  pump request is pending, not acknowledged  -> pending by admin@aquagrid.test target SS-01-PUMP
+PASS  AUTO without thresholds rejected  -> blocked: Automatic mode needs both thresholds
+PASS  thresholds without hysteresis rejected  -> blocked: new row for relation "pump_settings" violates check constraint "hysteresis"
+PASS  admin saves AUTO with ON 20 / OFF 8 cm  -> {"sub":"11111111-1111-1111-1111-111111111111","email":"admin@aquagrid.test"}
+PASS  settings stored as NOT calibrated  -> AUTO calibrated=false
+PASS  manual command refused while in AUTO  -> blocked: switch to Manual mode first
+PASS  citizen cannot change pump settings  -> blocked: admin role required
+PASS  anon cannot read pump settings  -> 0
+PASS  old unanswered request marked timed_out (not success)  -> ON=timed_out,OFF=pending
+== existing features unaffected
+PASS  admin can still update repair status (existing workflow)  -> {"sub":"11111111-1111-1111-1111-111111111111","email":"admin@aquagrid.test"}
+PASS  repair status change logged with admin email  -> Under Review by admin@aquagrid.test
+PASS  admin still cannot change repair scores (column grant)  -> blocked: permission denied for table repair_tickets
+PASS  citizen cannot read repair tickets  -> 0
+PASS  anon cannot read service health  -> 0
+PASS  anon still reads digital-twin runs  -> t
+
+63 passed, 0 failed

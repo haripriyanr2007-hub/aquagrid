@@ -1,0 +1,282 @@
+[
+  {
+    "test": "Risk labels at the guide thresholds",
+    "expected": "0.19 LOW, 0.20 MEDIUM, 0.45 HIGH, 0.70 CRITICAL",
+    "actual": "LOW, MEDIUM, MEDIUM, HIGH, HIGH, CRITICAL",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Risk formula 0.6 x flood + 0.4 x potholes",
+    "expected": "300 m3 + 10 MEDIUM potholes = 1.00 CRITICAL; 150 m3 + 0 = 0.30",
+    "actual": "1.0 CRITICAL; 0.3 MEDIUM",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Missing flood data is not treated as zero",
+    "expected": "flood_available False, explanation warns, flood_score None",
+    "actual": "risk 0.24 (potholes only), flagged",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "False positives excluded from pothole density",
+    "expected": "2 real + 3 false positives counts as 2",
+    "actual": "pothole_count 2",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Severity heuristic from box area",
+    "expected": "2% LOW, 8% MEDIUM, 20% HIGH, None -> None",
+    "actual": "['LOW', 'MEDIUM', 'HIGH', None]",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Repair priority ranks a risky, repeatedly detected road higher",
+    "expected": "CRITICAL road with repeats > LOW road; reasons explain it",
+    "actual": "hot 89.0 IMMEDIATE vs cold 2.8 MONITOR",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "NMEA GPS parsing (GGA + RMC, no-fix rejected)",
+    "expected": "12.9177, 77.6238 from both; None without fix",
+    "actual": "(12.9177, 77.6238) / (12.9177, 77.6238) / None",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "EXIF GPS read from a phone-style JPEG",
+    "expected": "coordinates written into EXIF are read back",
+    "actual": "(12.9177, 77.6238); photo without GPS -> None",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Location priority never invents coordinates",
+    "expected": "EXIF > device > browser > manual; nothing -> (None, None, 'none')",
+    "actual": "all four priorities correct; no source gives no coordinates",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Class filter keeps only potholes in multi-class models",
+    "expected": "pothole kept, manhole dropped; 1-class model keeps all",
+    "actual": "multi-class kept 1, single-class kept 2, area 50.0% -> HIGH",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Missing model weights reported clearly",
+    "expected": "model_loaded False with instructions",
+    "actual": "Model weights not found at /nonexistent/best.pt. Copy your trained bes...",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Alert duplicate prevention",
+    "expected": "same dedupe_key stored once",
+    "actual": "2 rows stored from 3 calls",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "FakeDB (in-memory Supabase)"
+  },
+  {
+    "test": "Road risk with no twin run flags missing flood data",
+    "expected": "all 4 segments flood_available False",
+    "actual": "run None; J2 risk 0.06 LOW from potholes only",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "FakeDB"
+  },
+  {
+    "test": "Road risk uses the latest twin run",
+    "expected": "J2 CRITICAL when twin predicts 300 m3 + 6 potholes",
+    "actual": "J2 0.84 CRITICAL; J1 0.0 (forecast says no flood)",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "FakeDB"
+  },
+  {
+    "test": "Repair priority keeps the human-set status",
+    "expected": "status 'In Progress' survives a recalculation",
+    "actual": "J2 rank 1, status In Progress",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "FakeDB"
+  },
+  {
+    "test": "Bridge only forwards known firmware commands",
+    "expected": "T:55, R:ON, D:AUTO accepted; 'rm -rf', T:999 rejected",
+    "actual": "5 accepted, 4 rejected",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Simulated node obeys commands and labels nothing as real",
+    "expected": "rain fills sump, first flush goes to drain, then gate opens above threshold",
+    "actual": "first flush to drain, then gate opened at reading 22 (level 59.8%)",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "SimulatedNode (software model)"
+  },
+  {
+    "test": "Twin optimiser beats the threshold controller",
+    "expected": "optimised flood < threshold flood < baseline",
+    "actual": "baseline 787 m3, threshold 696, optimised 563; OR1 opens at minute 75 (threshold opened earlier)",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "fake SWMM engine (tests/fakes.py)"
+  },
+  {
+    "test": "Rain series is written into the SWMM input file",
+    "expected": "[TIMESERIES] replaced, other sections intact",
+    "actual": "3 rain steps + end marker written; [ORIFICES] and [REPORT] preserved",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Twin run stores assumptions and gate plan",
+    "expected": "details contain assumptions, rain_source, open_at; alert deduplicated",
+    "actual": "2 runs stored, 1 flood alert (duplicate suppressed), reduction 28.4%",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "FakeDB + fake SWMM"
+  },
+  {
+    "test": "v3 Four-level severity for Pothole Condition Assessment",
+    "expected": "2% Low, 8% Medium, 20% High, 35% Critical, 3 boxes@16% Critical, none -> None",
+    "actual": "['Low', 'Medium', 'High', 'Critical', 'Critical', None]",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "v3 Perceptual hash spots the same photo, not a different one",
+    "expected": "re-saved/resized copy distance <= 4; different scene > 10",
+    "actual": "same photo distance 0, different photo distance 30",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "v3 Duplicate detection flags, never removes",
+    "expected": "same photo 20 m apart flagged; far-away different photo not flagged",
+    "actual": "flagged with score 1.0 (photo looks identical (hash distance 0/64); reported 16 m apart; submitted 2.0 h apart); unrelated report not flagged",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "v3 Verification: two independent agreeing reports -> Corroborated",
+    "expected": "Corroborated",
+    "actual": "Corroborated (score 0.8): 2 independent respondent(s) report the same",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "v3 Verification: one disagreement -> Conflicting, not fake",
+    "expected": "Conflicting",
+    "actual": "Conflicting: 1 independent respondent(s) report the opposite",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "v3 Verification: report contradicting a REAL sensor -> Requires Admin Review",
+    "expected": "Requires Admin Review; simulated reading ignored",
+    "actual": "real sensor: Requires Admin Review; simulated sensor: Unverified; NO ECHO reading: Unverified (not treated as 0)",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "v3 Verification: real sensor agreement -> Corroborated",
+    "expected": "Corroborated",
+    "actual": "Corroborated: matches a real sensor reading",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "v3 Verification: burst from one device -> Requires Admin Review",
+    "expected": "Requires Admin Review",
+    "actual": "Requires Admin Review: 4 responses from the same device within 10 minutes",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "v3 Telegram reply text classification",
+    "expected": "'water till knee' flooding, 'all clear' no_flooding, 'road blocked' road_blocked",
+    "actual": "['flooding', 'no_flooding', 'road_blocked', 'other']",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "v3 Worker stores an AI assessment from the existing model",
+    "expected": "completed, severity + confidence from model output",
+    "actual": "pothole, Critical, 0.82; submission still Pending Review",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "FakeDB + fake YOLO result"
+  },
+  {
+    "test": "v3 Worker without model weights does NOT invent a result",
+    "expected": "assessment 'model_unavailable', no severity/confidence",
+    "actual": "model_unavailable: Model weights not found",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "FakeDB"
+  },
+  {
+    "test": "v3 Worker flags a re-submitted photo as possible duplicate",
+    "expected": "second submission points at the first; both kept",
+    "actual": "AQ-TEST-1 flagged as possible duplicate of AQ-TEST-0 (score 1.0)",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "FakeDB"
+  },
+  {
+    "test": "v3 Response verification writes statuses to the database",
+    "expected": "3 responses updated; sensor-contradicted one needs review",
+    "actual": "{1: 'Requires Admin Review', 2: 'Unverified', 3: 'Unverified'}",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "FakeDB"
+  },
+  {
+    "test": "Every Python file compiles",
+    "expected": "no syntax errors",
+    "actual": "15 files OK",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  },
+  {
+    "test": "Migrations 002 and 003 never drop tables, columns or rows",
+    "expected": "no DROP TABLE / DROP COLUMN / TRUNCATE / DELETE FROM",
+    "actual": "both files: only ADD/CREATE/ALTER ADD/policies (003 replaces public policies with admin ones)",
+    "status": "PASS",
+    "executed": true,
+    "fakes": "none"
+  }
+]

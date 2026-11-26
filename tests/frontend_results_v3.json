@@ -1,0 +1,93 @@
+[
+ {
+  "test": "Dashboard compiles (esbuild, JSX) incl. new portal files",
+  "status": "PASS",
+  "actual": "bundled",
+  "executed": true,
+  "fakes": "recharts, react-leaflet, supabase-js stubbed"
+ },
+ {
+  "test": "13 admin sections render (10 existing + 3 new), with data and empty",
+  "status": "PASS",
+  "actual": "26/26 renders",
+  "executed": true,
+  "fakes": "mock data"
+ },
+ {
+  "test": "6 public sections render, with data and empty",
+  "status": "PASS",
+  "actual": "12/12 renders",
+  "executed": true,
+  "fakes": "mock data"
+ },
+ {
+  "test": "Public portal never shows admin data",
+  "status": "PASS",
+  "actual": "tracking IDs, responses, turbidity, Motor ON, review notes, thresholds absent",
+  "executed": true,
+  "fakes": "mock data"
+ },
+ {
+  "test": "Public navigation in Chrome (6 tabs)",
+  "status": "PASS",
+  "actual": "6/6",
+  "executed": true,
+  "fakes": "stubbed Supabase"
+ },
+ {
+  "test": "Report form offers camera capture AND gallery",
+  "status": "PASS",
+  "actual": "capture=environment + plain image picker",
+  "executed": true,
+  "fakes": "-"
+ },
+ {
+  "test": "Anonymous visitor opening #admin, #admin/pump, #admin/submissions, #admin/control",
+  "status": "PASS",
+  "actual": "login form only, no admin navigation",
+  "executed": true,
+  "fakes": "stubbed auth"
+ },
+ {
+  "test": "Signed-in user without admin role",
+  "status": "PASS",
+  "actual": "refused with 'has no admin role'",
+  "executed": true,
+  "fakes": "stubbed is_admin() = false"
+ },
+ {
+  "test": "Verified admin navigation (13 tabs)",
+  "status": "PASS",
+  "actual": "13/13",
+  "executed": true,
+  "fakes": "stubbed is_admin() = true"
+ },
+ {
+  "test": "Pump page labels hardware integration as pending; AUTO shows NOT CALIBRATED",
+  "status": "PASS",
+  "actual": "both texts present",
+  "executed": true,
+  "fakes": "-"
+ },
+ {
+  "test": "No JavaScript errors while clicking through both portals",
+  "status": "PASS",
+  "actual": "none",
+  "executed": true,
+  "fakes": "-"
+ },
+ {
+  "test": "Real Vite build, Leaflet tiles, Recharts drawing",
+  "status": "NOT TESTED",
+  "actual": "npm registry unreachable from this sandbox",
+  "executed": false,
+  "fakes": "-"
+ },
+ {
+  "test": "Real Supabase Auth login, Storage upload, signed URLs, Realtime",
+  "status": "NOT TESTED",
+  "actual": "no project credentials here (database rules tested on PostgreSQL instead)",
+  "executed": false,
+  "fakes": "-"
+ }
+]
